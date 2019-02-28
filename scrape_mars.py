@@ -3,11 +3,14 @@ from bs4 import BeautifulSoup as bs
 import requests
 import time
 import pandas as pd
+import sys
+from pprint import pprint
 
 #define  function on path for chromedriver.exe.  
 def init_browser():
     # @NOTE: Replace the path with your actual path to the chromedriver
-    executable_path = {'executable_path': 'C:/ChromeSafe/chromedriver.exe'}
+    #executable_path = {'executable_path': 'C:/ChromeSafe/chromedriver.exe'}
+    executable_path = {'executable_path': 'chromedriver.exe'}
     return Browser('chrome', **executable_path, headless=False)
 
 def scrape():
@@ -35,21 +38,13 @@ def scrape():
 
 
     # Visit mars space images - featured image
-    url1 ='https://www.jpl.nasa.gov/spaceimages/?search=&category=Mars'
+    url1 ='https://www.jpl.nasa.gov/spaceimages/details.php?id=PIA17838'
     browser.visit(url1)
+    html1 = browser.html
+    soup1 = bs(html1, 'html.parser')
 
     time.sleep(1)
 
-
-
-    image_featured = browser.find_by_id('full_image')
-    image_featured.click()
-
-    more_info_link = browser.find_link_by_partial_text('more info')
-    more_info_link.click()
-
-    html1 = browser.html
-    soup1 = bs(html1, 'html.parser')
 
     image_url = soup1.select_one('figure.lede a img').get("src")
     # image_url
@@ -58,23 +53,31 @@ def scrape():
     #add to dictionary
     Mars_dict["feature_image_url"]=featured_image_url
 
-    browser.quit()
+    #browser.quit()
 
     # Mars Weather tweet
     url2 = 'https://twitter.com/marswxreport?lang=en'
     
+    # browser = init_browser()
+    # html2 = browser.html
+    # soup2 = bs(html2, 'html.parser')
+    #browser = init_browser()
+    browser.visit(url2)
 
+    
     html2 = browser.html
     soup2 = bs(html2, 'html.parser')
 
-    browser.visit(url2)
-
     timeline_url = soup2.select_one('div.content div.js-tweet-text-container')
     mars_weather = timeline_url.find('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text').text
-    # add to dictionary
+    print(mars_weather, file=sys.stdout)
+
+# #     timeline_url = soup2.select_one('div.content div.js-tweet-text-container')
+#    
+# #     mars_weather = timeline_url.find('p').text
+#     # add to dictionary
     Mars_dict["Mars_tweet"]=mars_weather
 
-    browser.quit()
 
     # Mars Facts
     url3 = 'http://space-facts.com/mars/'
@@ -97,42 +100,46 @@ def scrape():
 
     Mars_dict["Marsfacts.html"] = html9
 
-    browser.quit()
 
     # Mars Hemisphere
+    print("starting hemisphere scrape")
     url4 = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     browser.visit(url4)
 
     html5 = browser.html
     soup5 = bs(html5, "html.parser")
 
-    time.sleep(4)
+    time.sleep(10)
 
     data = soup5.find('div', class_="collapsible results")
     #four_data = data.find_all('div',class_='item')
     four_data = data.find_all('div', class_="description")
-
+    pprint('going into loop')
+    count = 0
     for tag in four_data:
+        pprint(tag)
+        count += 1
+        print(str(count))
         title = tag.find('h3').text
-        #print(title)
+        pprint(title)
         #title_l.append(title)
-    
+        
         #while looping through, create a link for each with access to the full image url
         link  = "https://astrogeology.usgs.gov" + tag.find('a',class_='itemLink product-item')['href']
         #print(link)
     
         #browse each link 
         browser.visit(link)
-        time.sleep()
+        time.sleep(10)
     
         html6   = browser.html
         soup6 = bs(html6, 'html.parser')
         four_image = soup6.find('div', class_='downloads')
         four_images=four_image.li.a['href']
-        #print(four_images)
+        pprint(four_images)
     
         # create a dictionary for each loop
-        Mars_hmsph = dict()
+        Mars_hmsph = dict()  
         #add to the dictionary at each loop
         Mars_hmsph['title']= title
         Mars_hmsph['img_url']= four_images
@@ -140,20 +147,26 @@ def scrape():
     
         # to get all four append in list
         heremisphere_image_urls.append(Mars_hmsph)
-
-        Mars_dict["Heremisphere"] = heremisphere_image_urls
+        print('printing hermishper image urls')
+        pprint(heremisphere_image_urls)
+    Mars_dict["Heremisphere"] = heremisphere_image_urls
+    print('mars dictionary')
+    pprint(Mars_dict)
 
         # Dictionary to be inserted as a MongoDB document
-        post = {
-                'Title': Mars_dict["News_title"],
-                'News': Mars_dict["News_p"],
-                'Featured Image': Mars_dict["feature_image_url"],
-                'Weather Tweet' : Mars_dict["Mars_tweet"],
-                'Mars Facts' : Mars_dict["Marsfacts.html"],
-                'Hsphere' : Mars_dict["Heremisphere"],   
+    post = {
+            'Title': Mars_dict["News_title"],
+            'News': Mars_dict["News_p"],
+            'Featured Image': Mars_dict["feature_image_url"],
+            'Weather Tweet' : Mars_dict["Mars_tweet"],
+            'Mars Facts' : Mars_dict["Marsfacts.html"],
+            'Hsphere' : Mars_dict["Heremisphere"],   
             }
-
+    print('printing post')
+    pprint(post)
         
+        
+    return post
 
-        return post
-
+mars_result=scrape()
+pprint(mars_result)
