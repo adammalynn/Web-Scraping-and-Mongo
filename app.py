@@ -34,8 +34,8 @@ def scraper():
     
 
     # Insert into database
-    coll.insert_one(marsn_data)
-    #coll.update({"id": 1}, {"$set": marsn_data}, upsert = True)
+    # coll.insert_one(marsn_data)
+    coll.update({"id": 1}, {"$set": marsn_data}, upsert = True)
 
     # Redirect to home page
     return redirect("http://localhost:5000/", code=302)

@@ -68,9 +68,12 @@ def scrape():
     html2 = browser.html
     soup2 = bs(html2, 'html.parser')
 
+    #time.sleep(1)
+
     timeline_url = soup2.select_one('div.content div.js-tweet-text-container')
     mars_weather = timeline_url.find('p', class_='TweetTextSize TweetTextSize--normal js-tweet-text tweet-text').text
-    print(mars_weather, file=sys.stdout)
+    # print('this is the weather tweet')
+    # pprint(mars_weather)
 
 # #     timeline_url = soup2.select_one('div.content div.js-tweet-text-container')
 #    
@@ -102,27 +105,25 @@ def scrape():
 
 
     # Mars Hemisphere
-    print("starting hemisphere scrape")
+    #print("starting hemisphere scrape")
     url4 = 'https://astrogeology.usgs.gov/search/results?q=hemisphere+enhanced&k1=target&v1=Mars'
     browser.visit(url4)
 
     html5 = browser.html
     soup5 = bs(html5, "html.parser")
 
-    time.sleep(10)
+    time.sleep(18)
 
     data = soup5.find('div', class_="collapsible results")
-    #four_data = data.find_all('div',class_='item')
     four_data = data.find_all('div', class_="description")
-    pprint('going into loop')
+    #pprint('going into loop')
     count = 0
     for tag in four_data:
         pprint(tag)
         count += 1
-        print(str(count))
+        #print(str(count))
         title = tag.find('h3').text
-        pprint(title)
-        #title_l.append(title)
+        #pprint(title)
         
         #while looping through, create a link for each with access to the full image url
         link  = "https://astrogeology.usgs.gov" + tag.find('a',class_='itemLink product-item')['href']
@@ -132,11 +133,11 @@ def scrape():
         browser.visit(link)
         time.sleep(10)
     
-        html6   = browser.html
+        html6 = browser.html
         soup6 = bs(html6, 'html.parser')
         four_image = soup6.find('div', class_='downloads')
         four_images=four_image.li.a['href']
-        pprint(four_images)
+        #pprint(four_images)
     
         # create a dictionary for each loop
         Mars_hmsph = dict()  
@@ -149,9 +150,9 @@ def scrape():
         heremisphere_image_urls.append(Mars_hmsph)
         print('printing hermishper image urls')
         pprint(heremisphere_image_urls)
-    Mars_dict["Heremisphere"] = heremisphere_image_urls
-    print('mars dictionary')
-    pprint(Mars_dict)
+        Mars_dict["Heremisphere"] = heremisphere_image_urls
+    # print('mars dictionary')
+    # pprint(Mars_dict)
 
         # Dictionary to be inserted as a MongoDB document
     post = {
@@ -162,11 +163,11 @@ def scrape():
             'Mars Facts' : Mars_dict["Marsfacts.html"],
             'Hsphere' : Mars_dict["Heremisphere"],   
             }
-    print('printing post')
-    pprint(post)
+    # print('printing post')
+    # pprint(post)
         
         
     return post
 
-mars_result=scrape()
-pprint(mars_result)
+# mars_result=scrape()
+# pprint(mars_result)
