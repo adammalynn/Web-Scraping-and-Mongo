@@ -59,12 +59,16 @@
                 <h2>Mars Hemispheres</h2>
                 <hr>
                 <section id="figure">
-                    <a>  
-                    {% for each in mars_data.heremisphere_image_urls %}
-                    <h4>{{each["img_url"]}}</h4>
-                    <h4>{{each["title"]}}</h4>
-                    {% end for %}              
-                    </a>
+                    <p>  
+                    " 
+                        {% for each in mars_data.heremisphere_image_urls %}
+                    "
+                    <a><img width="400" src="{{each.img_url}}" alt="eachpic" /></a>
+                    <h4>{{each.title}}</h4>
+                    "
+                        {% end for %}    
+                    "          
+                    </p>
                 </section>
             </div>
         </div>
