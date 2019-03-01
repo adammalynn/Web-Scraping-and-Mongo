@@ -59,16 +59,11 @@
                 <h2>Mars Hemispheres</h2>
                 <hr>
                 <section id="figure">
-                        <!-- {% for each in mars_data.Heremisphere}
-
-                         <a href="{{mars_data.Mars_dict[Heremisphere].img_url}}" class="thumbnail">
-					    <img src="{{mars_data.Mars_dict[Heremisphere].img_url}}" alt="image">
-                        <h4 style="text-align: left">{{mars_data.Mars_dict["Heremisphere"].title}}</h4>
-                             {% end for%} -->
-                        <a href="{{marsn_data['Hsphere'][0]['img_url']}}" class="thumbnail">
-                                <img src="{{marsn['Hsphere'][0]['img_url']}}" alt="">
-                                <h4 style="text-align: left">{{marsn.Hsphere[0].title}}</h4>
-                                               
+                    <a>  
+                    {% for each in mars_data.heremisphere_image_urls}
+                    <h4 style= "text-align: left">{{each["img_url"]}}</h4>
+                    <h4 style="text-align: left">{{each["title"]}}</h4>
+                    {% end for %}              
                     </a>
                 </section>
             </div>
