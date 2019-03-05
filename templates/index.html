@@ -61,12 +61,12 @@
                 <section id="figure">
                     <p>  
                     " 
-                        {% for each in mars_data.heremisphere_image_urls %}
+                        {% for record in mars_data.heremisphere_image_urls %}
                     "
-                    <a><img width="400" src="{{each.img_url}}" alt="eachpic" /></a>
-                    <h4>{{each.title}}</h4>
+                    <a><img width="400" src={{record.img_url}} alt="eachpic" /></a>
+                    <h4>{{record.title}}</h4>
                     "
-                        {% end for %}    
+                        {% endfor %}
                     "          
                     </p>
                 </section>
