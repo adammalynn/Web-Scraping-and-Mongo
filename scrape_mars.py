@@ -15,8 +15,8 @@ def init_browser():
 
 def scrape():
     browser = init_browser()
-    Mars_dict=dict()
-    heremisphere_image_urls=[]
+    mars_dict=dict()
+    hermisphere_image_urls=[]
     
 
     # Visit url of page to be scrapped
@@ -33,8 +33,8 @@ def scrape():
     secondtitle = firstslide.find("div", class_='content_title').get_text()
     
     firstparagraph = firstslide.find("div", class_='article_teaser_body').get_text()
-    Mars_dict["News_title"]=secondtitle
-    Mars_dict["News_p"]=firstparagraph
+    mars_dict["title"] = secondtitle
+    mars_dict["news"]=firstparagraph
 
 
     # Visit mars space images - featured image
@@ -51,7 +51,7 @@ def scrape():
     featured_image_url = "https://www.jpl.nasa.gov"+ image_url
     # featured_image_url
     #add to dictionary
-    Mars_dict["feature_image_url"]=featured_image_url
+    mars_dict["feature_image"]=featured_image_url
 
     #browser.quit()
 
@@ -79,7 +79,7 @@ def scrape():
 #    
 # #     mars_weather = timeline_url.find('p').text
 #     # add to dictionary
-    Mars_dict["Mars_tweet"]=mars_weather
+    mars_dict["mars_tweet"]=mars_weather
 
 
     # Mars Facts
@@ -97,11 +97,12 @@ def scrape():
     # convert to html/ create html and save to file that can be opened in the browser
     marsf_df.to_html("marsfacts.html")
 
-    # another version for passing into a variable to print
-    html9 = marsf_df.to_html()
-    
-
-    Mars_dict["Marsfacts.html"] = html9
+    #set index  
+    marsf_df.set_index("Facts")
+    #Add another html version of the Mars facts tables.
+    mars_facts_html = marsf_df.to_html(classes="table table-striped")
+    mars_dict["mars_facts"] = mars_facts_html
+    #pprint(mars_dict)
 
 
     # Mars Hemisphere
@@ -119,7 +120,7 @@ def scrape():
     #pprint('going into loop')
     count = 0
     for tag in four_data:
-        pprint(tag)
+        #pprint(tag)
         count += 1
         #print(str(count))
         title = tag.find('h3').text
@@ -140,34 +141,34 @@ def scrape():
         #pprint(four_images)
     
         # create a dictionary for each loop
-        Mars_hmsph = dict()  
+        mars_hmsph = dict()  
         #add to the dictionary at each loop
-        Mars_hmsph['title']= title
-        Mars_hmsph['img_url']= four_images
+        mars_hmsph['title']= title
+        mars_hmsph['img_url']= four_images
         
     
         # to get all four append in list
-        heremisphere_image_urls.append(Mars_hmsph)
-        print('printing hermishper image urls')
-        pprint(heremisphere_image_urls)
-        Mars_dict["Heremisphere"] = heremisphere_image_urls
-    # print('mars dictionary')
-    # pprint(Mars_dict)
+        hermisphere_image_urls.append(mars_hmsph)
+        #print('printing hermishper image urls')
+        #pprint(heremisphere_image_urls)
+        mars_dict["hermisphere"] = hermisphere_image_urls
+    #print('mars dictionary')
+    #pprint(mars_dict)
 
-        # Dictionary to be inserted as a MongoDB document
-    post = {
-            'Title': Mars_dict["News_title"],
-            'News': Mars_dict["News_p"],
-            'Featured Image': Mars_dict["feature_image_url"],
-            'Weather Tweet' : Mars_dict["Mars_tweet"],
-            'Mars Facts' : Mars_dict["Marsfacts.html"],
-            'Hsphere' : Mars_dict["Heremisphere"],   
-            }
-    # print('printing post')
-    # pprint(post)
+    #     # Dictionary to be inserted as a MongoDB document
+    # post = {
+    #         'Title': Mars_dict["News_title"],
+    #         'News': Mars_dict["News_p"],
+    #         'Featured_Image': Mars_dict["feature_image_url"],
+    #         'Weather Tweet' : Mars_dict["Mars_tweet"],
+    #         'Mars Facts' : Mars_dict["Marsfacts.html"],
+    #         'Hsphere' : Mars_dict["Heremisphere"],   
+    #         }
+    # # print('printing post')
+    # # pprint(post)
         
         
-    return post
+    return mars_dict
 
 # mars_result=scrape()
 # pprint(mars_result)
